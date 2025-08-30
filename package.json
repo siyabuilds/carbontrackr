@@ -1,0 +1,32 @@
+{
+  "name": "carbontrackr",
+  "version": "1.0.0",
+  "description": "This is a backend only implementation of the Carbon Footprint Tracker project. Built isolatedly and uses TypeScript, Zod and has more robust functionality than the backend built for the initial full stack project.",
+  "main": "src/server.ts",
+  "scripts": {
+    "test": "jasmine",
+    "dev": "ts-node src/server.ts",
+    "build": "tsc",
+    "start": "node dist/server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/siyabuilds/carbontrackr.git"
+  },
+  "keywords": [
+    "express",
+    "mongodb",
+    "zod",
+    "typescript"
+  ],
+  "author": {
+    "name": "Siyabonga Lukhele",
+    "email": "siyabonga.lukhele@umuzi.org",
+    "portfolio": "https://siyabuilds.tech"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/siyabuilds/carbontrackr/issues"
+  },
+  "homepage": "https://github.com/siyabuilds/carbontrackr#readme"
+}
