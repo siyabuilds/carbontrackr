@@ -1,0 +1,24 @@
+services:
+  app:
+    build: .
+    ports:
+      - "3000:3000"
+    depends_on:
+      - mongo
+    environment:
+      - MONGO_URI=mongodb://mongo:27017/carbontrackr
+    networks:
+      - app
+    driver: bridge
+  mongo:
+    image: mongo:6.0
+    restart: always
+    ports:
+      - "27017:27017"
+    networks:
+      - app
+    driver: bridge
+    volumes:
+      - mongo-data:/data/db/carbontrackr
+volumes:
+  mongo-data:
