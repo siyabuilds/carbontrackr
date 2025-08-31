@@ -4,7 +4,7 @@ const User = require("../models/User");
 dotenv.config();
 
 const registerRouter: Router = express.Router();
-const emailRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
+const emailRegex: RegExp = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
 
 registerRouter.post(
   "/",
