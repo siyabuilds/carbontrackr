@@ -27,7 +27,7 @@ registerRouter.post(
       });
     }
 
-    if (password.length < 6) {
+    if (password.length < 8) {
       return res.status(400).json({
         message: "Password is too short",
         error: "INVALID_PASSWORD",
