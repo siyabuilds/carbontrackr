@@ -1,6 +1,5 @@
 import mongoose from "mongoose";
 import bcrypt from "bcrypt";
-import { lowercase, minLength } from "zod/v4";
 
 // User schema for MongoDB
 const userSchema = new mongoose.Schema(
