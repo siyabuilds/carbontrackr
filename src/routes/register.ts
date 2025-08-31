@@ -3,7 +3,7 @@ import dotenv from "dotenv";
 const User = require("../models/User");
 dotenv.config();
 
-const registerRouter: Router = express.Router();
+export const registerRouter: Router = express.Router();
 const emailRegex: RegExp = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
 
 registerRouter.post(
@@ -69,5 +69,3 @@ registerRouter.post(
     res.status(201).json({ message: "User registered successfully" });
   }
 );
-
-export default registerRouter;
