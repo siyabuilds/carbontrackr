@@ -5,6 +5,7 @@ type Category = keyof typeof activityData;
 type Activity<C extends Category> = keyof (typeof activityData)[C];
 
 interface ActivityDoc {
+  userId: mongoose.Types.ObjectId;
   category: Category;
   activity: Activity<Category>;
   value: number;
@@ -18,6 +19,10 @@ for (const category of categoryEnum) {
 
 const activitySchema: mongoose.Schema = new mongoose.Schema(
   {
+    userId: {
+      type: mongoose.Types.ObjectId,
+      required: true,
+    },
     category: {
       type: String,
       enum: categoryEnum,
