@@ -1,4 +1,10 @@
-export const activityData: Record<string, Record<string, number>> = {
+export type ActivityData = {
+  [category: string]: {
+    [activity: string]: number;
+  };
+};
+
+export const activityData: ActivityData = {
   Transport: {
     "Car (10km)": 2.4,
     "Bus (10km)": 1.5,
