@@ -7,13 +7,11 @@ services:
       - mongo
     environment:
       - MONGO_URI=mongodb://mongo:27017/carbontrackr
-    
+
   mongo:
     image: mongo:6.0
     restart: always
     ports:
       - "27017:27017"
     volumes:
-      - mongo-data:/data/db/carbontrackr
-volumes:
-  mongo-data:
+      - ./data/db:/data/db
