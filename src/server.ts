@@ -3,16 +3,19 @@ import dotenv from "dotenv";
 import { initDb } from "./db/initdb";
 import { loginRouter } from "./routes/login.js";
 import { registerRouter } from "./routes/register.js";
+import { activitiesRouter } from "./routes/activities";
 
 dotenv.config();
 
 const app: Express = express();
 const port: number = Number(process.env.PORT) || 3000;
 
+initDb();
+
+app.use(express.json());
 app.use("/api/login", loginRouter);
 app.use("/api/register", registerRouter);
-
-initDb();
+app.use("/api/activities", activitiesRouter);
 
 app.get("/", (req: Request, res: Response) => {
   res.status(200).json({ message: "Hello World!" });
