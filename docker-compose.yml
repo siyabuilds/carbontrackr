@@ -1,15 +1,25 @@
 services:
-  app:
+  carbontrackr_backend:
     build: .
     ports:
-      - "3000:3000"
+      - "4500:4500"
     depends_on:
       - mongo
     environment:
       - MONGO_URI=mongodb://mongo:27017/carbontrackr
     networks:
       - app
-    driver: bridge
+  nginx:
+    image: nginx:latest
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - carbontrackr_backend
+    networks:
+      - app
+
   mongo:
     image: mongo:6.0
     restart: always
