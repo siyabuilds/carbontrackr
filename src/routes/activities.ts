@@ -1,5 +1,5 @@
 import express, { Request, Response, NextFunction, Router } from "express";
-import { authenticateToken } from "../middleware/auth.js";
+import { authenticateToken } from "../middleware/auth";
 import { Activity } from "../models/Activity";
 
 const activitiesRouter: Router = express.Router();

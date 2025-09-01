@@ -1,8 +1,8 @@
 import express, { Request, Response, Express } from "express";
 import dotenv from "dotenv";
 import { initDb } from "./db/initdb";
-import { loginRouter } from "./routes/login.js";
-import { registerRouter } from "./routes/register.js";
+import { loginRouter } from "./routes/login";
+import { registerRouter } from "./routes/register";
 import { activitiesRouter } from "./routes/activities";
 
 dotenv.config();
