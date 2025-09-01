@@ -5,7 +5,9 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-const JWT_SECRET = process.env.JWT_SECRET;
+const JWT_SECRET =
+  process.env.JWT_SECRET ||
+  "carbon-footprint-tracker-secret-to-change-in-production";
 export const loginRouter: Router = express.Router();
 
 // POST /api/login
