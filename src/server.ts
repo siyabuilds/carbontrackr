@@ -4,11 +4,21 @@ import { initDb } from "./db/initdb";
 import { loginRouter } from "./routes/login";
 import { registerRouter } from "./routes/register";
 import { activitiesRouter } from "./routes/activities";
+import cors from "cors";
 
 dotenv.config();
 
 const app: Express = express();
 const port: number = Number(process.env.PORT) || 3000;
+
+const allowedOrigins: string[] = process.env.ALLOWED_ORIGINS?.split(",") || [];
+
+app.use(
+  cors({
+    origin: allowedOrigins,
+    credentials: true,
+  })
+);
 
 initDb();
 
