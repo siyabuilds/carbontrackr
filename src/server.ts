@@ -17,6 +17,8 @@ app.use(
   cors({
     origin: allowedOrigins,
     credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
 
@@ -26,6 +28,7 @@ app.use(express.json());
 app.use("/api/login", loginRouter);
 app.use("/api/register", registerRouter);
 app.use("/api/activities", activitiesRouter);
+app.options("*", cors());
 
 app.get("/", (req: Request, res: Response) => {
   res.status(200).json({ message: "Hello World!" });
