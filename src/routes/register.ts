@@ -1,6 +1,6 @@
 import express, { Request, Response, NextFunction, Router } from "express";
 import dotenv from "dotenv";
-const User = require("../models/User");
+import { User } from "../models/User";
 dotenv.config();
 
 export const registerRouter: Router = express.Router();
