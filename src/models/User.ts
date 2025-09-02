@@ -3,6 +3,7 @@ import bcrypt from "bcrypt";
 
 // Interface for User document
 export interface IUser extends Document {
+  fullName: string;
   username: string;
   email: string;
   password: string;
@@ -13,6 +14,11 @@ export interface IUser extends Document {
 // User schema for MongoDB
 const userSchema = new mongoose.Schema(
   {
+    fullName: {
+      trim: true,
+      required: true,
+      type: String,
+    },
     username: {
       type: String,
       required: true,

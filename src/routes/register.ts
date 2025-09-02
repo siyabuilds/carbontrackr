@@ -9,13 +9,13 @@ const emailRegex: RegExp = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
 registerRouter.post(
   "/",
   async (req: Request, res: Response, next: NextFunction) => {
-    const { username, email, password } = req.body;
+    const { fullName, username, email, password } = req.body;
 
-    if (!username || !email || !password) {
+    if (!fullName || !username || !email || !password) {
       return res.status(400).json({
         message: "Missing required fields",
         error: "MISSING_FIELDS",
-        details: "Username, email, and password are all required.",
+        details: "Full name, username, email, and password are all required.",
       });
     }
 
@@ -56,7 +56,7 @@ registerRouter.post(
           details: "An account with this username already exists.",
         });
       }
-      const newUser = new User({ username, email, password });
+      const newUser = new User({ fullName, username, email, password });
       await newUser.save();
     } catch (error) {
       return res.status(500).json({
