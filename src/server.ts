@@ -4,6 +4,7 @@ import { initDb } from "./db/initdb";
 import { loginRouter } from "./routes/login";
 import { registerRouter } from "./routes/register";
 import { activitiesRouter } from "./routes/activities";
+import validationRoute from "./routes/validateToken";
 import cors from "cors";
 
 dotenv.config();
@@ -28,6 +29,7 @@ app.use(express.json());
 app.use("/api/login", loginRouter);
 app.use("/api/register", registerRouter);
 app.use("/api/activities", activitiesRouter);
+app.use("/api/validate", validationRoute);
 app.options("*", cors());
 
 app.get("/", (req: Request, res: Response) => {
