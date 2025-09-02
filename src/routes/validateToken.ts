@@ -6,12 +6,8 @@ dotenv.config();
 
 const validationRoute: Router = express.Router();
 
-validationRoute.get(
-  "/validate",
-  authenticateToken,
-  (req: Request, res: Response) => {
-    res.json({ valid: true });
-  }
-);
+validationRoute.get("/", authenticateToken, (req: Request, res: Response) => {
+  res.json({ valid: true });
+});
 
 export default validationRoute;
