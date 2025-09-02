@@ -9,7 +9,7 @@ activitiesRouter.get(
   "/",
   authenticateToken,
   async (req: Request, res: Response) => {
-    const userId = req.user?.id || req.user._id;
+    const userId = req.user?._id;
 
     if (!userId) {
       return res.status(401).json({ message: "Unauthorized" });
@@ -29,7 +29,7 @@ activitiesRouter.post(
   "/",
   authenticateToken,
   async (req: Request, res: Response) => {
-    const userId = req.user?.id || req.user._id;
+    const userId = req.user?._id;
 
     if (!userId) {
       return res.status(401).json({ message: "Unauthorized" });
@@ -53,7 +53,7 @@ activitiesRouter.delete(
   "/:id",
   authenticateToken,
   async (req: Request, res: Response) => {
-    const userId = req.user?.id || req.user._id;
+    const userId = req.user?._id;
     const activityId = req.params.id;
 
     if (!userId) {
@@ -80,7 +80,7 @@ activitiesRouter.delete(
   "/",
   authenticateToken,
   async (req: Request, res: Response) => {
-    const userId = req.user?.id || req.user._id;
+    const userId = req.user?._id;
 
     if (!userId) {
       return res.status(401).json({ message: "Unauthorized" });

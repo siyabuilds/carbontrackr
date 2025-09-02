@@ -29,7 +29,8 @@ const authenticateToken = async (
       "carbon-footprint-tracker-secret-to-change-in-production";
 
     const decoded = jwt.verify(token, JWT_SECRET) as any;
-    const user = await User.findById(decoded._id);
+    const userId = decoded._id || decoded.userId;
+    const user = await User.findById(userId);
 
     if (!user) {
       return res.status(403).json({ message: "Invalid or expired token" });
