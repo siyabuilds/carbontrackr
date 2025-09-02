@@ -9,6 +9,7 @@ interface ActivityDoc {
   category: Category;
   activity: Activity<Category>;
   value: number;
+  date: Date;
 }
 
 const categoryEnum = Object.keys(activityData);
@@ -44,8 +45,16 @@ const activitySchema: mongoose.Schema = new mongoose.Schema(
       required: true,
       min: 0,
     },
+    date: {
+      type: Date,
+      required: true,
+      default: Date.now,
+    },
   },
-  { collection: "activities" }
+  {
+    collection: "activities",
+    timestamps: true,
+  }
 );
 
 // auto-fill `value` from activityData
