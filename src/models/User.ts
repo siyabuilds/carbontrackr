@@ -1,9 +1,10 @@
-import mongoose, { Document } from "mongoose";
+import mongoose, { Document, Types } from "mongoose";
 import bcrypt from "bcrypt";
 
 // Interface for User document
 export interface IUser extends Document {
   fullName: string;
+  _id: Types.ObjectId;
   username: string;
   email: string;
   password: string;
