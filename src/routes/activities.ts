@@ -95,4 +95,26 @@ activitiesRouter.delete(
   }
 );
 
+// Calculate average emissions across all users
+activitiesRouter.get(
+  "/average-emissions",
+  async (req: Request, res: Response) => {
+    try {
+      const result = await Activity.aggregate([
+        {
+          $group: {
+            _id: null,
+            averageEmission: { $avg: "$value" },
+          },
+        },
+      ]);
+
+      const averageEmission = result.length > 0 ? result[0].averageEmission : 0;
+      res.json({ averageEmission });
+    } catch (error) {
+      res.status(500).json({ message: "Internal server error" });
+    }
+  }
+);
+
 export { activitiesRouter };
