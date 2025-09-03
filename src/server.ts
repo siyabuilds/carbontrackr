@@ -6,6 +6,7 @@ import { registerRouter } from "./routes/register";
 import { activitiesRouter } from "./routes/activities";
 import validationRoute from "./routes/validateToken";
 import cors from "cors";
+import path from "path";
 
 dotenv.config();
 
@@ -25,6 +26,7 @@ app.use(
 
 initDb();
 
+app.use(express.static(path.join(__dirname, "..", "public")));
 app.use(express.json());
 app.use("/api/login", loginRouter);
 app.use("/api/register", registerRouter);
@@ -33,7 +35,7 @@ app.use("/api/validate", validationRoute);
 app.options("*", cors());
 
 app.get("/", (req: Request, res: Response) => {
-  res.status(200).json({ message: "Hello World!" });
+  res.sendFile(path.join(__dirname, "..", "public", "index.html"));
 });
 
 app.listen(port, (): void => {

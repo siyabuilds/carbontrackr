@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CarbonTrackr API Docs</title>
+    <style>
+      /* Reset and base styles */
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family: "Inter", "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: #2c3e50;
+        line-height: 1.6;
+        min-height: 100vh;
+        padding: 30px 15px;
+      }
+
+      .container {
+        max-width: 900px;
+        background: #ffffff;
+        margin: auto;
+        border-radius: 15px;
+        padding: 40px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+      }
+
+      h1 {
+        text-align: center;
+        font-size: 2.8em;
+        margin-bottom: 15px;
+        background: linear-gradient(45deg, #667eea, #764ba2);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+
+      h2 {
+        font-size: 1.8em;
+        color: #34495e;
+        margin-top: 40px;
+        border-bottom: 3px solid #3498db;
+        padding-bottom: 8px;
+      }
+
+      h3 {
+        font-size: 1.3em;
+        margin-bottom: 12px;
+        color: #2c3e50;
+      }
+
+      h4 {
+        font-size: 1.1em;
+        margin-bottom: 8px;
+        color: #34495e;
+      }
+
+      p {
+        margin-bottom: 15px;
+        color: #495057;
+      }
+
+      ul {
+        background: #f8f9fa;
+        padding: 20px;
+        border-radius: 10px;
+        border-left: 4px solid #28a745;
+        margin-bottom: 20px;
+      }
+
+      li {
+        margin: 10px 0;
+        color: #495057;
+      }
+
+      .frontend-link {
+        text-align: center;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 25px;
+        border-radius: 12px;
+        margin: 25px 0;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+      }
+
+      .frontend-link a {
+        color: #ffffff;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 1.2em;
+      }
+
+      .frontend-link a:hover {
+        text-decoration: underline;
+      }
+
+      code {
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        color: white;
+        padding: 4px 10px;
+        border-radius: 6px;
+        font-family: "Courier New", monospace;
+      }
+
+      pre {
+        background: #2c3e50;
+        color: #ecf0f1;
+        padding: 15px;
+        border-radius: 10px;
+        overflow-x: auto;
+        border-left: 5px solid #3498db;
+        margin-bottom: 20px;
+      }
+
+      pre code {
+        background: none;
+        color: #ecf0f1;
+        padding: 0;
+      }
+
+      .endpoint {
+        background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+        padding: 25px;
+        margin-bottom: 25px;
+        border-radius: 15px;
+        border-left: 6px solid #3498db;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+      }
+
+      .method {
+        font-weight: bold;
+        color: #fff;
+        padding: 8px 18px;
+        border-radius: 25px;
+        display: inline-block;
+        margin-right: 12px;
+        text-transform: uppercase;
+        font-size: 0.9em;
+        letter-spacing: 1px;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+      }
+
+      .post {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      }
+
+      .get {
+        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+      }
+
+      .delete {
+        background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+        color: #2c3e50;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>CarbonTrackr API</h1>
+
+      <div class="frontend-link">
+        🌐 <strong>Frontend App:</strong>
+        <a href="https://carbontrackr.vercel.app" target="_blank"
+          >carbontrackr.vercel.app</a
+        >
+        <p>
+          Use this frontend alongside the API for a smooth carbon tracking
+          adventure.
+        </p>
+      </div>
+
+      <p>
+        Welcome to the CarbonTrackr API! Here you can log, track, and manage
+        your carbon footprint activities with ease.
+      </p>
+
+      <h2>Authentication</h2>
+      <p>
+        Most endpoints need a valid JWT. Register or log in to get your token
+        and include it in the <code>Authorization</code> header:
+      </p>
+      <pre><code>Authorization: Bearer &lt;your_jwt_token&gt;</code></pre>
+
+      <h2>Tech Stack</h2>
+      <ul>
+        <li>Node.js</li>
+        <li>Express.js</li>
+        <li>TypeScript</li>
+        <li>MongoDB</li>
+        <li>Docker</li>
+      </ul>
+
+      <h2>Docker Deployment</h2>
+      <p>Launch the API with Docker Compose for a hassle-free setup:</p>
+      <pre><code>docker-compose up --build</code></pre>
+      <p>Backend runs on <code>4500</code>, MongoDB on <code>27017</code>.</p>
+
+      <h2>API Endpoints</h2>
+
+      <!-- Endpoints start here -->
+      <div class="endpoint">
+        <h3>
+          <span class="method post">POST</span> <code>/api/register</code>
+        </h3>
+        <p>Create a new user account.</p>
+        <h4>Request Body:</h4>
+        <pre><code>{
+  "fullName": "John Doe",
+  "username": "johndoe",
+  "email": "john.doe@example.com",
+  "password": "password123"
+}</code></pre>
+        <h4>Response:</h4>
+        <pre><code>{
+  "message": "User registered successfully"
+}</code></pre>
+      </div>
+
+      <div class="endpoint">
+        <h3><span class="method post">POST</span> <code>/api/login</code></h3>
+        <p>Log in to get your JWT token.</p>
+        <h4>Request Body:</h4>
+        <pre><code>{
+  "email": "john.doe@example.com",
+  "password": "password123"
+}</code></pre>
+        <h4>Response:</h4>
+        <pre><code>{
+  "message": "Login successful",
+  "token": "your_jwt_token"
+}</code></pre>
+      </div>
+
+      <div class="endpoint">
+        <h3><span class="method get">GET</span> <code>/api/validate</code></h3>
+        <p>Check if your JWT is still valid.</p>
+        <h4>Headers:</h4>
+        <pre><code>{
+  "Authorization": "Bearer &lt;your_jwt_token&gt;"
+}</code></pre>
+        <h4>Response:</h4>
+        <pre><code>{
+  "valid": true
+}</code></pre>
+      </div>
+
+      <div class="endpoint">
+        <h3>
+          <span class="method get">GET</span> <code>/api/activities</code>
+        </h3>
+        <p>Fetch all your logged activities.</p>
+        <h4>Headers:</h4>
+        <pre><code>{
+  "Authorization": "Bearer &lt;your_jwt_token&gt;"
+}</code></pre>
+      </div>
+
+      <div class="endpoint">
+        <h3>
+          <span class="method post">POST</span> <code>/api/activities</code>
+        </h3>
+        <p>Log a new carbon activity.</p>
+        <h4>Headers:</h4>
+        <pre><code>{
+  "Authorization": "Bearer &lt;your_jwt_token&gt;"
+}</code></pre>
+        <h4>Request Body:</h4>
+        <pre><code>{
+  "activity_type": "transport",
+  "mode": "car",
+  "distance": 50,
+  "carbon_emissions": 15.5
+}</code></pre>
+      </div>
+
+      <div class="endpoint">
+        <h3>
+          <span class="method delete">DELETE</span>
+          <code>/api/activities/:id</code>
+        </h3>
+        <p>Remove a specific activity by ID.</p>
+        <h4>Headers:</h4>
+        <pre><code>{
+  "Authorization": "Bearer &lt;your_jwt_token&gt;"
+}</code></pre>
+      </div>
+
+      <div class="endpoint">
+        <h3>
+          <span class="method delete">DELETE</span> <code>/api/activities</code>
+        </h3>
+        <p>Clear all your activities in one go.</p>
+        <h4>Headers:</h4>
+        <pre><code>{
+  "Authorization": "Bearer &lt;your_jwt_token&gt;"
+}</code></pre>
+      </div>
+    </div>
+  </body>
+</html>
