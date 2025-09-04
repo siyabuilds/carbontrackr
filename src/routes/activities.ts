@@ -103,14 +103,18 @@ activitiesRouter.get(
       const result = await Activity.aggregate([
         {
           $group: {
-            _id: null,
+            _id: "$category",
             averageEmission: { $avg: "$value" },
           },
         },
       ]);
 
-      const averageEmission = result.length > 0 ? result[0].averageEmission : 0;
-      res.json({ averageEmission });
+      const averages = result.map((item) => ({
+        category: item._id,
+        averageEmission: item.averageEmission,
+      }));
+
+      res.json(averages);
     } catch (error) {
       res.status(500).json({ message: "Internal server error" });
     }
