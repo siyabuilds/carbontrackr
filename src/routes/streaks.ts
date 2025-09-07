@@ -5,12 +5,12 @@ import { authenticateToken } from "../middleware/auth";
 
 const streaksRouter: Router = express.Router();
 
-// GET /streaks/:userId - Get 7-day streak for a user
+// GET /streaks - Get 7-day streak for the authenticated user
 streaksRouter.get(
-  "/:userId",
+  "/",
   authenticateToken,
   async (req: Request, res: Response) => {
-    const { userId } = req.user?._id;
+    const userId = req.user?._id;
 
     if (!userId) {
       return res.status(401).json({ message: "Unauthorized" });
