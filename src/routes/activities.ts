@@ -1,6 +1,8 @@
 import express, { Request, Response, NextFunction, Router } from "express";
 import { authenticateToken } from "../middleware/auth";
 import { Activity } from "../models/Activity";
+import { IUser } from "../models/User";
+import mongoose from "mongoose";
 
 const activitiesRouter: Router = express.Router();
 
@@ -120,5 +122,66 @@ activitiesRouter.get(
     }
   }
 );
+
+// GET /api/activities/leaderboard - Get top 10 users with lowest emissions
+activitiesRouter.get("/leaderboard", async (req: Request, res: Response) => {
+  try {
+    const leaderboard = await Activity.aggregate([
+      {
+        $group: {
+          _id: "$userId",
+          totalEmissions: { $sum: "$value" },
+          activityCount: { $sum: 1 },
+        },
+      },
+      {
+        $match: {
+          activityCount: { $gt: 0 },
+        },
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "_id",
+          foreignField: "_id",
+          as: "user",
+        },
+      },
+      {
+        $unwind: "$user",
+      },
+      {
+        $project: {
+          _id: 1,
+          totalEmissions: 1,
+          activityCount: 1,
+          username: "$user.username",
+          fullName: "$user.fullName",
+        },
+      },
+      {
+        $sort: { totalEmissions: 1 },
+      },
+      {
+        $limit: 10,
+      },
+    ]);
+
+    // Add rank to each user
+    const rankedLeaderboard = leaderboard.map((user, index) => ({
+      rank: index + 1,
+      userId: user._id,
+      username: user.username,
+      fullName: user.fullName,
+      totalEmissions: Math.round(user.totalEmissions * 100) / 100,
+      activityCount: user.activityCount,
+    }));
+
+    res.json(rankedLeaderboard);
+  } catch (error) {
+    console.error("Leaderboard error:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
 
 export { activitiesRouter };
