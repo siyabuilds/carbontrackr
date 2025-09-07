@@ -19,8 +19,9 @@ streaksRouter.get(
     try {
       // Get activities for the last 7 days (including today)
       const today = new Date();
-      today.setHours(0, 0, 0, 0);
+      today.setHours(23, 59, 59, 999); // End of today
       const sevenDaysAgo = new Date(today);
+      sevenDaysAgo.setHours(0, 0, 0, 0);
       sevenDaysAgo.setDate(today.getDate() - 6);
 
       // Find distinct days the user has activities
