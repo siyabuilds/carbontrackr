@@ -5,6 +5,7 @@ import { loginRouter } from "./routes/login";
 import { registerRouter } from "./routes/register";
 import { activitiesRouter } from "./routes/activities";
 import validationRoute from "./routes/validateToken";
+import { streaksRouter } from "./routes/streaks";
 import cors from "cors";
 import path from "path";
 
@@ -32,6 +33,7 @@ app.use("/api/login", loginRouter);
 app.use("/api/register", registerRouter);
 app.use("/api/activities", activitiesRouter);
 app.use("/api/validate", validationRoute);
+app.use("/api/streaks", streaksRouter);
 app.options("*", cors());
 
 app.get("/", (req: Request, res: Response) => {
