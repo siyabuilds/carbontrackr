@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { activityData, ActivityData } from "../utils/activity-data";
+import { activityData } from "../utils/activity-data";
 
 type Category = keyof typeof activityData;
 type Activity<C extends Category> = keyof (typeof activityData)[C];
