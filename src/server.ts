@@ -9,11 +9,14 @@ import { streaksRouter } from "./routes/streaks";
 import cors from "cors";
 import cron from "node-cron";
 import path from "path";
+import { createServer } from "http";
 
 dotenv.config();
 
 const app: Express = express();
 const port: number = Number(process.env.PORT) || 3000;
+
+const server = createServer(app);
 
 const allowedOrigins: string[] = process.env.ALLOWED_ORIGINS?.split(",") || [];
 
@@ -45,6 +48,6 @@ app.get("/wakeup", (req: Request, res: Response) => {
   res.status(200).json({ message: "Server is awake" });
 });
 
-app.listen(port, (): void => {
+server.listen(port, (): void => {
   console.log(`Server is running on http://localhost:${port}`);
 });
