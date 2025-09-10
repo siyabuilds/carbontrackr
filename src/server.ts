@@ -8,6 +8,7 @@ import validationRoute from "./routes/validateToken";
 import { streaksRouter } from "./routes/streaks";
 import cors from "cors";
 import cron from "node-cron";
+import { runWeeklyAnalysis } from "./jobs/weeklyAnalysis";
 import path from "path";
 import { createServer } from "http";
 
@@ -50,4 +51,27 @@ app.get("/wakeup", (req: Request, res: Response) => {
 
 server.listen(port, (): void => {
   console.log(`Server is running on http://localhost:${port}`);
+  /**
+   * Schedule the weekly analysis job.
+   * Runs every Monday at 01:00 UTC.
+   * Cron expression: '0 1 * * 1' (minute hour day-of-month month day-of-week)
+   */
+  const task = cron.schedule(
+    "0 1 * * 1",
+    async () => {
+      try {
+        const res = await runWeeklyAnalysis();
+        console.log(
+          `Weekly analysis completed for ${
+            res.processedUsers
+          } users. Range: ${res.start.toISOString()} - ${res.end.toISOString()}`
+        );
+      } catch (err) {
+        console.error("Weekly analysis failed:", err);
+      }
+    },
+    { timezone: "UTC" }
+  );
+  task.start();
+  console.log("Weekly analysis cron scheduled: 01:00 UTC every Monday");
 });
