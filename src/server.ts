@@ -7,6 +7,7 @@ import { activitiesRouter } from "./routes/activities";
 import validationRoute from "./routes/validateToken";
 import { streaksRouter } from "./routes/streaks";
 import cors from "cors";
+import cron from "node-cron";
 import path from "path";
 
 dotenv.config();
