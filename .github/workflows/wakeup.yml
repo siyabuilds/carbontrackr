@@ -1,0 +1,13 @@
+name: Wakeup Render Service
+
+on: 
+  schedule:
+    - cron: '55 0 * * 1' # At 00:55 every Monday
+
+jobs:
+  wakeup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Wake up Render Service
+        run: |
+          curl -s -o /dev/null -w "%{http_code}" https://carbontrackr-lfwd.onrender.com/wakeup

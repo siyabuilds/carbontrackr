@@ -40,6 +40,10 @@ app.get("/", (req: Request, res: Response) => {
   res.sendFile(path.join(__dirname, "..", "public", "index.html"));
 });
 
+app.get("/wakeup", (req: Request, res: Response) => {
+  res.status(200).json({ message: "Server is awake" });
+});
+
 app.listen(port, (): void => {
   console.log(`Server is running on http://localhost:${port}`);
 });
