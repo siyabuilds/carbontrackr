@@ -11,6 +11,7 @@ import cron from "node-cron";
 import { runWeeklyAnalysis } from "./jobs/weeklyAnalysis";
 import path from "path";
 import { createServer } from "http";
+import { Server } from "socket.io";
 
 dotenv.config();
 
@@ -18,6 +19,7 @@ const app: Express = express();
 const port: number = Number(process.env.PORT) || 3000;
 
 const server = createServer(app);
+const io = new Server(server);
 
 const allowedOrigins: string[] = process.env.ALLOWED_ORIGINS?.split(",") || [];
 
@@ -47,6 +49,10 @@ app.get("/", (req: Request, res: Response) => {
 
 app.get("/wakeup", (req: Request, res: Response) => {
   res.status(200).json({ message: "Server is awake" });
+});
+
+io.on("connection", (socket) => {
+  console.log("A user connected");
 });
 
 server.listen(port, (): void => {
