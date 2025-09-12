@@ -1,5 +1,3 @@
-import { time } from "console";
-
 export type TipData = {
   [category: string]: {
     [activity: string]: string | string[];
@@ -187,7 +185,18 @@ export const formatTipResponse = (
   userId: string
 ) => {
   const tips = tipData[category]?.[activity];
-  if (!tips) return "No tips available";
+  if (!tips) {
+    return {
+      userId,
+      category,
+      activity,
+      emissionLevel: "unknown",
+      tipType: "unavailable",
+      message: "No tips available for this activity",
+      allTips: [],
+      timestamp: new Date().toISOString(),
+    };
+  }
 
   const isLowEmission = typeof tips === "string";
 

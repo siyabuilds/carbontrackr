@@ -8,6 +8,7 @@ interface CustomSocket extends Socket {
 export const activitySockets = (io: Server, socket: CustomSocket) => {
   socket.on("register-user", (userId: string) => {
     socket.join(userId);
+    console.log(`User ${userId} joined room`);
   });
 
   socket.on(
@@ -21,10 +22,11 @@ export const activitySockets = (io: Server, socket: CustomSocket) => {
       category: string;
       activity: string;
     }) => {
+      console.log(
+        `Activity logged: ${category} - ${activity} for user ${userId}`
+      );
       const tipResponse = formatTipResponse(category, activity, userId);
-      if (tipResponse) {
-        io.to(userId).emit("tip-response", tipResponse);
-      }
+      io.to(userId).emit("tip-response", tipResponse);
     }
   );
 };
