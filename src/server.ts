@@ -20,7 +20,13 @@ const app: Express = express();
 const port: number = Number(process.env.PORT) || 3000;
 
 const server = createServer(app);
-const io = new Server(server);
+const io = new Server(server, {
+  cors: {
+    origin: process.env.ALLOWED_ORIGINS?.split(",") || [],
+    methods: ["GET", "POST"],
+    credentials: true,
+  },
+});
 
 const allowedOrigins: string[] = process.env.ALLOWED_ORIGINS?.split(",") || [];
 
