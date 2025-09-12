@@ -41,7 +41,7 @@ app.use(
 
 initDb();
 
-registerSockets(io, server);
+registerSockets(io);
 
 app.use(express.static(path.join(__dirname, "..", "public")));
 app.use(express.json());
@@ -58,10 +58,6 @@ app.get("/", (req: Request, res: Response) => {
 
 app.get("/wakeup", (req: Request, res: Response) => {
   res.status(200).json({ message: "Server is awake" });
-});
-
-io.on("connection", (socket) => {
-  console.log("A user connected");
 });
 
 server.listen(port, (): void => {
