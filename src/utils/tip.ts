@@ -1,3 +1,5 @@
+import { time } from "console";
+
 export type TipData = {
   [category: string]: {
     [activity: string]: string | string[];
@@ -178,3 +180,27 @@ export const tipData: TipData = {
     "Plastic Bag Reused": "Good job reusing! Keep using reusable bags",
   },
 } as const;
+
+export const formatTipResponse = (
+  category: string,
+  activity: string,
+  userId: string
+) => {
+  const tips = tipData[category]?.[activity];
+  if (!tips) return "No tips available";
+
+  const isLowEmission = typeof tips === "string";
+
+  return {
+    userId,
+    category,
+    activity,
+    emissionLevel: isLowEmission ? "low" : "high",
+    tipType: isLowEmission ? "positive" : "improvement",
+    message: isLowEmission
+      ? tips
+      : tips[Math.floor(Math.random() * tips.length)],
+    allTips: isLowEmission ? [tips] : tips,
+    timestamp: new Date().toISOString(),
+  };
+};
