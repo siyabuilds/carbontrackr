@@ -12,6 +12,7 @@ import { runWeeklyAnalysis } from "./jobs/weeklyAnalysis";
 import path from "path";
 import { createServer } from "http";
 import { Server } from "socket.io";
+import { registerSockets } from "./sockets";
 
 dotenv.config();
 
@@ -33,6 +34,8 @@ app.use(
 );
 
 initDb();
+
+registerSockets(io, server);
 
 app.use(express.static(path.join(__dirname, "..", "public")));
 app.use(express.json());
