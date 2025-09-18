@@ -4,19 +4,22 @@ import { WeeklySummary } from "../models/WeeklySummary";
 import { tipData } from "../utils/tip";
 
 // Helper function to find highest and lowest emission categories
-function analyzeEmissionCategories(byCategoryTotals: Record<string, number>, byCategoryCounts: Record<string, number>) {
+function analyzeEmissionCategories(
+  byCategoryTotals: Record<string, number>,
+  byCategoryCounts: Record<string, number>
+) {
   const categories = Object.entries(byCategoryTotals);
-  
+
   if (categories.length === 0) {
     return { highest: null, lowest: null };
   }
 
   // Sort by emissions (highest first)
   categories.sort((a, b) => b[1] - a[1]);
-  
+
   const [highestCategory, highestEmissions] = categories[0];
   const [lowestCategory, lowestEmissions] = categories[categories.length - 1];
-  
+
   return {
     highest: {
       category: highestCategory,
@@ -37,7 +40,11 @@ async function generatePersonalizedTip(
   highestCategory: string,
   weekStart: Date,
   weekEnd: Date
-): Promise<{ category: string; message: string; tipType: "positive" | "improvement" } | null> {
+): Promise<{
+  category: string;
+  message: string;
+  tipType: "positive" | "improvement";
+} | null> {
   try {
     // Get the most frequent activity in the highest emission category for this user
     const topActivity = await Activity.findOne({
@@ -62,8 +69,8 @@ async function generatePersonalizedTip(
     }
 
     const isPositive = typeof tips === "string";
-    const message = isPositive 
-      ? tips 
+    const message = isPositive
+      ? tips
       : tips[Math.floor(Math.random() * tips.length)];
 
     return {
@@ -170,12 +177,15 @@ export async function runWeeklyAnalysis(referenceDate?: Date) {
     }
 
     // Analyze emission categories
-    const { highest, lowest } = analyzeEmissionCategories(byCategoryTotals, byCategoryCounts);
-    
+    const { highest, lowest } = analyzeEmissionCategories(
+      byCategoryTotals,
+      byCategoryCounts
+    );
+
     // Generate personalized tip
-    const personalizedTip = highest ? 
-      await generatePersonalizedTip(r._id, highest.category, start, end) : 
-      null;
+    const personalizedTip = highest
+      ? await generatePersonalizedTip(r._id, highest.category, start, end)
+      : null;
 
     return WeeklySummary.updateOne(
       { userId: r._id, weekStart: start },
@@ -264,12 +274,15 @@ export async function runCurrentWeekAnalysis(
     }
 
     // Analyze emission categories
-    const { highest, lowest } = analyzeEmissionCategories(byCategoryTotals, byCategoryCounts);
-    
+    const { highest, lowest } = analyzeEmissionCategories(
+      byCategoryTotals,
+      byCategoryCounts
+    );
+
     // Generate personalized tip
-    const personalizedTip = highest ? 
-      await generatePersonalizedTip(r._id, highest.category, start, end) : 
-      null;
+    const personalizedTip = highest
+      ? await generatePersonalizedTip(r._id, highest.category, start, end)
+      : null;
 
     return WeeklySummary.updateOne(
       { userId: r._id, weekStart: start },
