@@ -7,6 +7,10 @@ interface CustomSocket extends Socket {
 
 export const activitySockets = (io: Server, socket: CustomSocket) => {
   socket.on("register-user", (userId: string) => {
+    if (!userId || typeof userId !== "string") {
+      socket.emit("error", { message: "Invalid user ID" });
+      return;
+    }
     socket.join(userId);
     console.log(`User ${userId} joined room`);
   });
