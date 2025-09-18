@@ -1,6 +1,7 @@
 import express, { Express, Request, Response, Router } from "express";
 import jwt from "jsonwebtoken";
 import { User } from "../models/User";
+import { runCurrentWeekAnalysis } from "../jobs/weeklyAnalysis";
 import dotenv from "dotenv";
 
 dotenv.config();
@@ -63,6 +64,19 @@ loginRouter.post("/", async (req: Request, res: Response) => {
     const token = jwt.sign({ userId: user._id }, JWT_SECRET, {
       expiresIn: "7d",
     });
+
+    // Generate current week summary for the user upon login
+    try {
+      await runCurrentWeekAnalysis(user._id);
+      console.log(
+        `Current week summary generated for user ${user._id} on login`
+      );
+    } catch (analysisError) {
+      console.error(
+        `Failed to generate current week summary for user ${user._id}:`,
+        analysisError
+      );
+    }
 
     res.status(200).json({ message: "Login successful", token });
   } catch (error) {
