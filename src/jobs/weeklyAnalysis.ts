@@ -1,6 +1,81 @@
 import mongoose from "mongoose";
 import { Activity } from "../models/Activity";
 import { WeeklySummary } from "../models/WeeklySummary";
+import { tipData } from "../utils/tip";
+
+// Helper function to find highest and lowest emission categories
+function analyzeEmissionCategories(byCategoryTotals: Record<string, number>, byCategoryCounts: Record<string, number>) {
+  const categories = Object.entries(byCategoryTotals);
+  
+  if (categories.length === 0) {
+    return { highest: null, lowest: null };
+  }
+
+  // Sort by emissions (highest first)
+  categories.sort((a, b) => b[1] - a[1]);
+  
+  const [highestCategory, highestEmissions] = categories[0];
+  const [lowestCategory, lowestEmissions] = categories[categories.length - 1];
+  
+  return {
+    highest: {
+      category: highestCategory,
+      emissions: Number(highestEmissions.toFixed(2)),
+      activityCount: byCategoryCounts[highestCategory] || 0,
+    },
+    lowest: {
+      category: lowestCategory,
+      emissions: Number(lowestEmissions.toFixed(2)),
+      activityCount: byCategoryCounts[lowestCategory] || 0,
+    },
+  };
+}
+
+// Helper function to generate personalized tip
+async function generatePersonalizedTip(
+  userId: mongoose.Types.ObjectId,
+  highestCategory: string,
+  weekStart: Date,
+  weekEnd: Date
+): Promise<{ category: string; message: string; tipType: "positive" | "improvement" } | null> {
+  try {
+    // Get the most frequent activity in the highest emission category for this user
+    const topActivity = await Activity.findOne({
+      userId,
+      category: highestCategory,
+      date: { $gte: weekStart, $lt: weekEnd },
+    })
+      .sort({ value: -1 }) // Get the highest emission activity
+      .exec();
+
+    if (!topActivity) {
+      return null;
+    }
+
+    const tips = tipData[highestCategory]?.[topActivity.activity];
+    if (!tips) {
+      return {
+        category: highestCategory,
+        message: `Consider reducing activities in ${highestCategory} to lower your carbon footprint.`,
+        tipType: "improvement",
+      };
+    }
+
+    const isPositive = typeof tips === "string";
+    const message = isPositive 
+      ? tips 
+      : tips[Math.floor(Math.random() * tips.length)];
+
+    return {
+      category: highestCategory,
+      message,
+      tipType: isPositive ? "positive" : "improvement",
+    };
+  } catch (error) {
+    console.error("Error generating personalized tip:", error);
+    return null;
+  }
+}
 
 function getLastWeekRange(now = new Date()) {
   // Define week as Monday 00:00:00 to next Monday 00:00:00 UTC
@@ -86,13 +161,21 @@ export async function runWeeklyAnalysis(referenceDate?: Date) {
   const results = (await Activity.aggregate(pipeline)) as AggDoc[];
 
   // Upsert WeeklySummary per user
-  const ops = results.map((r) => {
+  const ops = results.map(async (r) => {
     const byCategoryTotals: Record<string, number> = {};
     const byCategoryCounts: Record<string, number> = {};
     for (const entry of r.byCategory) {
       byCategoryTotals[entry.k] = entry.v.total;
       byCategoryCounts[entry.k] = entry.v.count;
     }
+
+    // Analyze emission categories
+    const { highest, lowest } = analyzeEmissionCategories(byCategoryTotals, byCategoryCounts);
+    
+    // Generate personalized tip
+    const personalizedTip = highest ? 
+      await generatePersonalizedTip(r._id, highest.category, start, end) : 
+      null;
 
     return WeeklySummary.updateOne(
       { userId: r._id, weekStart: start },
@@ -105,6 +188,9 @@ export async function runWeeklyAnalysis(referenceDate?: Date) {
           activitiesCount: r.activitiesCount,
           byCategoryTotals,
           byCategoryCounts,
+          highestEmissionCategory: highest,
+          lowestEmissionCategory: lowest,
+          personalizedTip,
           generatedAt: new Date(),
         },
       },
@@ -169,13 +255,21 @@ export async function runCurrentWeekAnalysis(
   const results = (await Activity.aggregate(pipeline)) as AggDoc[];
 
   // Upsert WeeklySummary per user for current week
-  const ops = results.map((r) => {
+  const ops = results.map(async (r) => {
     const byCategoryTotals: Record<string, number> = {};
     const byCategoryCounts: Record<string, number> = {};
     for (const entry of r.byCategory) {
       byCategoryTotals[entry.k] = entry.v.total;
       byCategoryCounts[entry.k] = entry.v.count;
     }
+
+    // Analyze emission categories
+    const { highest, lowest } = analyzeEmissionCategories(byCategoryTotals, byCategoryCounts);
+    
+    // Generate personalized tip
+    const personalizedTip = highest ? 
+      await generatePersonalizedTip(r._id, highest.category, start, end) : 
+      null;
 
     return WeeklySummary.updateOne(
       { userId: r._id, weekStart: start },
@@ -188,6 +282,9 @@ export async function runCurrentWeekAnalysis(
           activitiesCount: r.activitiesCount,
           byCategoryTotals,
           byCategoryCounts,
+          highestEmissionCategory: highest,
+          lowestEmissionCategory: lowest,
+          personalizedTip,
           generatedAt: new Date(),
         },
       },

@@ -8,6 +8,21 @@ export interface WeeklySummaryDoc extends mongoose.Document {
   activitiesCount: number;
   byCategoryTotals: Map<string, number>;
   byCategoryCounts: Map<string, number>;
+  highestEmissionCategory: {
+    category: string;
+    emissions: number;
+    activityCount: number;
+  } | null;
+  lowestEmissionCategory: {
+    category: string;
+    emissions: number;
+    activityCount: number;
+  } | null;
+  personalizedTip: {
+    category: string;
+    message: string;
+    tipType: "positive" | "improvement";
+  } | null;
   generatedAt: Date;
 }
 
@@ -25,6 +40,21 @@ const weeklySummarySchema = new mongoose.Schema<WeeklySummaryDoc>(
     activitiesCount: { type: Number, required: true, default: 0 },
     byCategoryTotals: { type: Map, of: Number, default: {} },
     byCategoryCounts: { type: Map, of: Number, default: {} },
+    highestEmissionCategory: {
+      category: { type: String },
+      emissions: { type: Number },
+      activityCount: { type: Number },
+    },
+    lowestEmissionCategory: {
+      category: { type: String },
+      emissions: { type: Number },
+      activityCount: { type: Number },
+    },
+    personalizedTip: {
+      category: { type: String },
+      message: { type: String },
+      tipType: { type: String, enum: ["positive", "improvement"] },
+    },
     generatedAt: { type: Date, default: Date.now },
   },
   {
