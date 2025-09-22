@@ -1,7 +1,89 @@
 import mongoose from "mongoose";
 import { Activity } from "../models/Activity";
 import { WeeklySummary } from "../models/WeeklySummary";
+import { ReductionTarget } from "../models/ReductionTarget";
 import { tipData } from "../utils/tip";
+
+// Helper function to calculate reduction progress
+async function calculateReductionProgress(
+  userId: mongoose.Types.ObjectId,
+  currentEmissions: number,
+  currentWeekStart: Date
+): Promise<{
+  targetValue: number;
+  targetType: "percentage" | "absolute";
+  previousWeekEmissions: number | null;
+  reductionAchieved: number | null;
+  progressPercentage: number | null;
+  targetMet: boolean;
+} | null> {
+  try {
+    // Get active weekly reduction target for user
+    const activeTarget = await ReductionTarget.findOne({
+      userId,
+      targetPeriod: "weekly",
+      isActive: true,
+    });
+
+    if (!activeTarget) {
+      return null;
+    }
+
+    // Calculate previous week start
+    const prevWeekStart = new Date(currentWeekStart);
+    prevWeekStart.setDate(prevWeekStart.getDate() - 7);
+
+    // Get previous week's summary to compare
+    const previousSummary = await WeeklySummary.findOne({
+      userId,
+      weekStart: prevWeekStart,
+    });
+
+    const previousWeekEmissions = previousSummary?.totalValue || null;
+
+    if (previousWeekEmissions === null) {
+      // No previous week data available
+      return {
+        targetValue: activeTarget.targetValue,
+        targetType: activeTarget.targetType,
+        previousWeekEmissions: null,
+        reductionAchieved: null,
+        progressPercentage: null,
+        targetMet: false,
+      };
+    }
+
+    let reductionAchieved: number;
+    let progressPercentage: number;
+    let targetMet: boolean;
+
+    if (activeTarget.targetType === "percentage") {
+      // Calculate percentage reduction achieved
+      reductionAchieved =
+        ((previousWeekEmissions - currentEmissions) / previousWeekEmissions) *
+        100;
+      progressPercentage = (reductionAchieved / activeTarget.targetValue) * 100;
+      targetMet = reductionAchieved >= activeTarget.targetValue;
+    } else {
+      // Absolute reduction target
+      reductionAchieved = previousWeekEmissions - currentEmissions;
+      progressPercentage = (reductionAchieved / activeTarget.targetValue) * 100;
+      targetMet = reductionAchieved >= activeTarget.targetValue;
+    }
+
+    return {
+      targetValue: activeTarget.targetValue,
+      targetType: activeTarget.targetType,
+      previousWeekEmissions,
+      reductionAchieved: Number(reductionAchieved.toFixed(2)),
+      progressPercentage: Number(Math.max(0, progressPercentage).toFixed(1)),
+      targetMet,
+    };
+  } catch (error) {
+    console.error("Error calculating reduction progress:", error);
+    return null;
+  }
+}
 
 // Helper function to find highest and lowest emission categories
 function analyzeEmissionCategories(
@@ -39,7 +121,15 @@ async function generatePersonalizedTip(
   userId: mongoose.Types.ObjectId,
   highestCategory: string,
   weekStart: Date,
-  weekEnd: Date
+  weekEnd: Date,
+  reductionProgress?: {
+    targetValue: number;
+    targetType: "percentage" | "absolute";
+    previousWeekEmissions: number | null;
+    reductionAchieved: number | null;
+    progressPercentage: number | null;
+    targetMet: boolean;
+  } | null
 ): Promise<{
   category: string;
   message: string;
@@ -59,6 +149,44 @@ async function generatePersonalizedTip(
       return null;
     }
 
+    // Generate target-aware tips if reduction progress is available
+    if (reductionProgress) {
+      if (reductionProgress.targetMet) {
+        return {
+          category: highestCategory,
+          message: `Great job! You've met your ${
+            reductionProgress.targetType === "percentage"
+              ? `${reductionProgress.targetValue}% reduction`
+              : `${reductionProgress.targetValue} kg reduction`
+          } target. Keep up the excellent work on reducing ${highestCategory} emissions!`,
+          tipType: "positive",
+        };
+      } else if (
+        reductionProgress.progressPercentage !== null &&
+        reductionProgress.progressPercentage > 50
+      ) {
+        return {
+          category: highestCategory,
+          message: `You're ${reductionProgress.progressPercentage.toFixed(
+            1
+          )}% towards your reduction target! Focus on reducing ${
+            topActivity.activity
+          } in ${highestCategory} to reach your goal.`,
+          tipType: "improvement",
+        };
+      } else if (
+        reductionProgress.reductionAchieved !== null &&
+        reductionProgress.reductionAchieved < 0
+      ) {
+        return {
+          category: highestCategory,
+          message: `Your ${highestCategory} emissions increased this week. Try reducing ${topActivity.activity} activities to get back on track with your target.`,
+          tipType: "improvement",
+        };
+      }
+    }
+
+    // Fall back to standard tips
     const tips = tipData[highestCategory]?.[topActivity.activity];
     if (!tips) {
       return {
@@ -182,9 +310,22 @@ export async function runWeeklyAnalysis(referenceDate?: Date) {
       byCategoryCounts
     );
 
+    // Calculate reduction progress (for last week analysis)
+    const reductionProgress = await calculateReductionProgress(
+      r._id,
+      r.totalValue,
+      start
+    );
+
     // Generate personalized tip
     const personalizedTip = highest
-      ? await generatePersonalizedTip(r._id, highest.category, start, end)
+      ? await generatePersonalizedTip(
+          r._id,
+          highest.category,
+          start,
+          end,
+          reductionProgress
+        )
       : null;
 
     return WeeklySummary.updateOne(
@@ -201,6 +342,7 @@ export async function runWeeklyAnalysis(referenceDate?: Date) {
           highestEmissionCategory: highest,
           lowestEmissionCategory: lowest,
           personalizedTip,
+          reductionTarget: reductionProgress,
           generatedAt: new Date(),
         },
       },
@@ -279,9 +421,22 @@ export async function runCurrentWeekAnalysis(
       byCategoryCounts
     );
 
+    // Calculate reduction progress (for current week analysis)
+    const reductionProgress = await calculateReductionProgress(
+      r._id,
+      r.totalValue,
+      start
+    );
+
     // Generate personalized tip
     const personalizedTip = highest
-      ? await generatePersonalizedTip(r._id, highest.category, start, end)
+      ? await generatePersonalizedTip(
+          r._id,
+          highest.category,
+          start,
+          end,
+          reductionProgress
+        )
       : null;
 
     return WeeklySummary.updateOne(
@@ -298,6 +453,7 @@ export async function runCurrentWeekAnalysis(
           highestEmissionCategory: highest,
           lowestEmissionCategory: lowest,
           personalizedTip,
+          reductionTarget: reductionProgress,
           generatedAt: new Date(),
         },
       },
