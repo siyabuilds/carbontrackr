@@ -23,6 +23,14 @@ export interface WeeklySummaryDoc extends mongoose.Document {
     message: string;
     tipType: "positive" | "improvement";
   } | null;
+  reductionTarget: {
+    targetValue: number;
+    targetType: "percentage" | "absolute";
+    previousWeekEmissions: number | null;
+    reductionAchieved: number | null;
+    progressPercentage: number | null;
+    targetMet: boolean;
+  } | null;
   generatedAt: Date;
 }
 
@@ -54,6 +62,14 @@ const weeklySummarySchema = new mongoose.Schema<WeeklySummaryDoc>(
       category: { type: String },
       message: { type: String },
       tipType: { type: String, enum: ["positive", "improvement"] },
+    },
+    reductionTarget: {
+      targetValue: { type: Number },
+      targetType: { type: String, enum: ["percentage", "absolute"] },
+      previousWeekEmissions: { type: Number },
+      reductionAchieved: { type: Number },
+      progressPercentage: { type: Number },
+      targetMet: { type: Boolean },
     },
     generatedAt: { type: Date, default: Date.now },
   },

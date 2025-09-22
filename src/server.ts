@@ -7,6 +7,7 @@ import { activitiesRouter } from "./routes/activities";
 import validationRoute from "./routes/validateToken";
 import { streaksRouter } from "./routes/streaks";
 import { summariesRouter } from "./routes/summaries";
+import { reductionTargetsRouter } from "./routes/reductionTargets";
 import cors from "cors";
 import cron from "node-cron";
 import { runWeeklyAnalysis } from "./jobs/weeklyAnalysis";
@@ -52,6 +53,7 @@ app.use("/api/activities", activitiesRouter);
 app.use("/api/validate", validationRoute);
 app.use("/api/streaks", streaksRouter);
 app.use("/api/summaries", summariesRouter);
+app.use("/api/targets", reductionTargetsRouter);
 app.options("*", cors());
 
 app.get("/", (req: Request, res: Response) => {
